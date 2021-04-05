@@ -115,11 +115,12 @@ def objectsize(image, marker):
 		# draw the object sizes on the image
 		cv2.putText(orig, "{:.1f}cm".format(dimB),
 					(int(tltrX - 15), int(tltrY - 10)), cv2.FONT_HERSHEY_SIMPLEX,
-					0.65, (255, 128, 255), 2)
+					0.65, (255, 64, 64), 2)
 		cv2.putText(orig, "{:.1f}cm".format(dimA),
 					(int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX,
-					0.65, (255, 128, 255), 2)
+					0.65, (255, 64, 64), 2)
 
 		# show the output image
 		cv2.imshow("Image", orig)
+		cv2.imwrite("./output/"+str(tltrX)+".jpg", orig)
 		cv2.waitKey(0)
