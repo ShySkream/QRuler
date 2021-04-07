@@ -17,7 +17,7 @@ def midpoint(ptA, ptB):
 	return (ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5
 
 
-def objectsize(image, marker):
+def objectsize(image, marker, pixelsPerMetric):
 	print("WE RECIEVED:", marker)
 	# convert image to grayscale, and blur it slightly
 	gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -30,6 +30,7 @@ def objectsize(image, marker):
 	edged = cv2.erode(edged, None, iterations=1)
 
 	cv2.imshow("Edges", edged)
+	cv2.imwrite("./output/edges.jpg", edged)
 	cv2.waitKey(0)
 
 	# find contours in the edge map
@@ -40,7 +41,6 @@ def objectsize(image, marker):
 	# sort the contours from left-to-right and initialize the
 	# 'pixels per metric' calibration variable
 	(cnts, _) = contours.sort_contours(cnts)
-	pixelsPerMetric = None
 	boxes = []
 
 	# loop over the contours individually
@@ -60,7 +60,7 @@ def objectsize(image, marker):
 		# box
 		box = perspective.order_points(box)
 		boxes.append(box)
-
+	'''
 	minDist = 99999.
 	for box in boxes:  # loop through boxes to find the one closest to the aruco marker, set the PPM
 		distance = abs(box[2][0]-marker[0])+abs(box[2][1]-marker[1])  # rough difference between marker and current box
@@ -70,7 +70,7 @@ def objectsize(image, marker):
 			print("CLOSEST contour:", box[2])
 			minDist = distance
 			pixelsPerMetric = dist.euclidean(box[2], box[1]) / 8  # calculates vertical length of the marker
-
+	'''
 	for box in boxes:
 		orig = image.copy()
 		cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)

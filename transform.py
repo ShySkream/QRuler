@@ -2,36 +2,61 @@
 import numpy as np
 import cv2
 
-def order_points(pts):
-	# initialzie a list of coordinates that will be ordered
-	# such that the first entry in the list is the top-left,
-	# the second entry is the top-right, the third is the
-	# bottom-right, and the fourth is the bottom-left
-	rect = np.zeros((4, 2), dtype = "float32")
 
-	# the top-left point will have the smallest sum, whereas
-	# the bottom-right point will have the largest sum
-	s = pts.sum(axis = 1)
-	rect[0] = pts[np.argmin(s)]
-	rect[2] = pts[np.argmax(s)]
+def removeEmpty(img):
+	h, w, _ = img.shape
+	print(h, w)
+	cv2.imshow("pre removal", img)
+	gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+	minx = 9999999
+	maxx = 0
+	miny = 9999999
+	maxy = 0
 
-	# now, compute the difference between the points, the
-	# top-right point will have the smallest difference,
-	# whereas the bottom-left will have the largest difference
-	diff = np.diff(pts, axis = 1)
-	rect[1] = pts[np.argmin(diff)]
-	rect[3] = pts[np.argmax(diff)]
+	for y in range(h-1):
+		for x in range(w-1):
+			if gray[y, x] != 0:
+				if miny is 9999999:
+					miny = y
+				if maxx < x:
+					maxx = x
+				if minx > x:
+					minx = x
+				maxy = y
 
-	# return the ordered coordinates
-	return rect
+	print(miny, maxy, minx, maxx)
+
+	img2 = img[minx:maxx, miny:maxy, :]
+	return img2
+
+
+def GetPadding(img, pts):
+	# most of this is testing code
+	minx = 9999999
+	maxx = 0
+	miny = 9999999
+	maxy = 0
+	for point in pts:
+		if point[0] < minx:
+			minx = point[0]
+		if point[0] > maxx:
+			maxx = point[0]
+		if point[1] < miny:
+			miny = point[1]
+		if point[1] > maxy:
+			maxy = point[1]
+
+	# the actual code for getting image margins
+	height, width, _ = img.shape
+	return height, height, width, width
+	# 310, 3400, 640, 700
 
 
 def four_point_transform(image, pts):
-	height, width, _ = image.shape
 	# obtain a consistent order of the points and unpack them
 	# individually
 	print(pts)
-	# rect = order_points(pts)
+	padUp, padDown, padLeft, padRight = GetPadding(image, pts)
 	rect = pts
 	(tl, tr, br, bl) = rect
 	print(rect)
@@ -57,15 +82,16 @@ def four_point_transform(image, pts):
 	# in the top-left, top-right, bottom-right, and bottom-left
 	# order
 	dst = np.array([
-		[width, height],
-		[maxSize+width, height],
-		[maxSize+width, maxSize+height],
-		[width, maxSize+height]], dtype = "float32")
+		[padLeft, padUp],
+		[padLeft+maxSize, padUp],
+		[padLeft+maxSize, padUp+maxSize],
+		[padLeft, padUp+maxSize]], dtype="float32")
 
 	# compute the perspective transform matrix and then apply it
 	M = cv2.getPerspectiveTransform(rect, dst)
 	print(M)
-	warped = cv2.warpPerspective(image, M, (maxSize+width*3, maxSize+height*3))
+	warped = cv2.warpPerspective(image, M, (maxSize+padRight+padLeft, maxSize+padDown+padUp))
 
+	warped = removeEmpty(warped)
 	# return the warped image
 	return warped
