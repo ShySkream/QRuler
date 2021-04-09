@@ -44,7 +44,7 @@ def calibrate_image(img, matrix, distortion, new_width=1280, new_height=960):
     # Get height/width of image
     h, w = new_img.shape[:2]
 
-    new_camera_mtx, roi = cv2.getOptimalNewCameraMatrix(matrix, distortion, (w, h), 0.8, (w, h))
+    new_camera_mtx, roi = cv2.getOptimalNewCameraMatrix(matrix, distortion, (w, h), 1, (w, h))
     undistorted_img = cv2.undistort(new_img, matrix, distortion, None, new_camera_mtx)
 
     # Crop the image to remove the black border (warped distortion)
