@@ -13,12 +13,10 @@ def find_aruco_marker(img):
     corners, ids, rejected_points = aruco.detectMarkers(img, aruco_dict, parameters=parameters)
 
     # Can subtract # of pixels to determine how long 8 cm is and use it to ratio
-    print("Corners", corners)
-
     image = img.copy()
     aruco.drawDetectedMarkers(image, corners)
 
-    cv2.imshow("Marker", image)
+    # cv2.imshow("Marker", image)
 
     return corners[0][0]
 
@@ -44,8 +42,10 @@ def calibrate_image(img, matrix, distortion, new_width=1280, new_height=960):
     # Get height/width of image
     h, w = new_img.shape[:2]
 
-    new_camera_mtx, roi = cv2.getOptimalNewCameraMatrix(matrix, distortion, (w, h), 1, (w, h))
-    undistorted_img = cv2.undistort(new_img, matrix, distortion, None, new_camera_mtx)
+    # commented out due to bad warping of objects.
+    # new_camera_mtx, roi = cv2.getOptimalNewCameraMatrix(matrix, distortion, (w, h), 1, (w, h))
+    # undistorted_img = cv2.undistort(new_img, matrix, distortion, None, new_camera_mtx)
+    undistorted_img = new_img
 
     # Crop the image to remove the black border (warped distortion)
     # x, y, width, height = roi

@@ -6,7 +6,8 @@ import cv2
 def removeEmpty(img):
 	h, w, _ = img.shape
 	print(h, w)
-	cv2.imshow("pre removal", img)
+	# cv2.imshow("pre removal", img)
+	cv2.imwrite("./output/no crop.jpg", img)
 	gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 	minx = 9999999
 	maxx = 0
@@ -16,7 +17,7 @@ def removeEmpty(img):
 	for y in range(h-1):
 		for x in range(w-1):
 			if gray[y, x] != 0:
-				if miny is 9999999:
+				if miny == 9999999:
 					miny = y
 				if maxx < x:
 					maxx = x
@@ -26,7 +27,7 @@ def removeEmpty(img):
 
 	print(miny, maxy, minx, maxx)
 
-	img2 = img[minx:maxx, miny:maxy, :]
+	img2 = img[miny+10:maxy-10, minx+10:maxx-10]
 	return img2
 
 
@@ -55,7 +56,6 @@ def GetPadding(img, pts):
 def four_point_transform(image, pts):
 	# obtain a consistent order of the points and unpack them
 	# individually
-	print(pts)
 	padUp, padDown, padLeft, padRight = GetPadding(image, pts)
 	rect = pts
 	(tl, tr, br, bl) = rect

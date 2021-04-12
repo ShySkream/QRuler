@@ -29,7 +29,7 @@ def objectsize(image, marker, pixelsPerMetric):
 	edged = cv2.dilate(edged, None, iterations=1)
 	edged = cv2.erode(edged, None, iterations=1)
 
-	cv2.imshow("Edges", edged)
+	# cv2.imshow("Edges", edged)
 	cv2.imwrite("./output/edges.jpg", edged)
 	cv2.waitKey(0)
 
@@ -71,6 +71,7 @@ def objectsize(image, marker, pixelsPerMetric):
 			minDist = distance
 			pixelsPerMetric = dist.euclidean(box[2], box[1]) / 8  # calculates vertical length of the marker
 	'''
+	outName = 1
 	for box in boxes:
 		orig = image.copy()
 		cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
@@ -119,8 +120,9 @@ def objectsize(image, marker, pixelsPerMetric):
 		cv2.putText(orig, "{:.1f}cm".format(dimA),
 					(int(trbrX + 10), int(trbrY)), cv2.FONT_HERSHEY_SIMPLEX,
 					0.65, (255, 64, 64), 2)
-
+		print("Object " + str(outName)+": " + "{:.1f}cm".format(dimB) + " by {:.1f}cm".format(dimA))
 		# show the output image
-		cv2.imshow("Image", orig)
-		cv2.imwrite("./output/"+str(tltrX)+".jpg", orig)
+		# cv2.imshow("Image", orig)
+		cv2.imwrite("./output/object "+str(outName)+".jpg", orig)
+		outName = outName+1
 		cv2.waitKey(0)
