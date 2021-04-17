@@ -1,14 +1,12 @@
 # USAGE
-# python object_size.py --image images/example_01.png --width 0.955
-# python object_size.py --image images/example_02.png --width 0.955
-# python object_size.py --image images/example_03.png --width 3.5
+# python main.py -i ./input/Straps1.jpg
+# python main.py -i ./input/Generated/angle75.png
 
 # import the necessary packages
 from scipy.spatial import distance as dist
 from imutils import perspective
 from imutils import contours
 import numpy as np
-import argparse
 import imutils
 import cv2
 
@@ -48,10 +46,9 @@ def objectsize(image, marker, pixelsPerMetric):
 		# if the contour is not sufficiently large, ignore it
 		if cv2.contourArea(c) < 100:
 			continue
-
 		# compute the rotated bounding box of the contour
 		box = cv2.minAreaRect(c)
-		box = cv2.cv.BoxPoints(box) if imutils.is_cv2() else cv2.boxPoints(box)
+		box = cv2.boxPoints(box)
 		box = np.array(box, dtype="int")
 
 		# order the points in the contour such that they appear
